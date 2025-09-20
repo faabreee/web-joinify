@@ -12,6 +12,7 @@ import {useState} from "react";
 import { toast } from "sonner"
 import FormProvider from "@/components/custom/hook-form/form-provider";
 import {useRouter} from "next/navigation";
+import {useAuthRegister} from "@/hooks/auth/use-auth";
 
 interface IRegisterUser {
     name: string;
@@ -39,17 +40,17 @@ export default function RegisterPage() {
     const { push } = useRouter()
 
     const schema = yup.object().shape({
-        name: yup.string().required("Name is required"),
-        lastName: yup.string().required("Last name is required"),
-        username: yup.string().required("Username is required"),
-        phone: yup.string().required("Phone number is required"),
+        name: yup.string().required("El nombre es requerido"),
+        lastName: yup.string().required("El apellido es requerido"),
+        username: yup.string().required("El username es requerido"),
+        phone: yup.string().required("El número de teléfono es requerido"),
         age: yup
             .number()
             .typeError("Age must be a number")
             .required("Age is required")
             .min(1, "Minimum age is 1"),
-        email: yup.string().email("Invalid email").required("Email is required"),
-        password: yup.string().required("Password is required"),
+        email: yup.string().email("Ingrese correctamten el email").required("El email es requerido"),
+        password: yup.string().required("Contraseña es requerido"),
     });
 
     const methods = useForm({
@@ -57,15 +58,26 @@ export default function RegisterPage() {
         resolver: yupResolver(schema),
     })
 
-    const { register, control, setValue, handleSubmit, formState} = methods;
+    const { register, handleSubmit, formState} = methods;
+
+    const {
+        trigger,
+        isMutating,
+    } = useAuthRegister()
 
     const onSubmit = handleSubmit(async (data): Promise<void> => {
         try {
-            push("login");
+            const result = await trigger(data);
 
-            toast(`User ${data.name} ${data.lastName} successfully registered`, {
-                description: new Date().toISOString(),
-            })
+            if (result.code == "00") {
+                toast(`User ${data.name} ${data.lastName} successfully registered`, {
+                    description: new Date().toISOString(),
+                })
+
+                push("login")
+
+            }
+
         } catch (error) {
             console.log(error);
             toast("There was an error during registration", {

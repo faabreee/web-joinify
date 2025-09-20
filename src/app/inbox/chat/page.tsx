@@ -7,12 +7,8 @@ import {Input} from "@/components/ui/input";
 import { Client, IMessage } from '@stomp/stompjs';
 import React, {useEffect, useRef, useState} from 'react';
 import SockJS from "sockjs-client";
-import {AnimatedList, AnimatedListItem} from "@/components/magicui/animated-list";
-import FormProvider from "@/components/custom/hook-form/form-provider";
-import * as yup from "yup";
-import {useForm} from "react-hook-form";
-import {yupResolver} from "@hookform/resolvers/yup";
 import {toast} from "sonner";
+import ChatMenu from "@/sections/inbox/chat-menu";
 
 export default function ChatPage() {
     const [messages, setMessages] = useState<String[]>([]);
@@ -63,30 +59,36 @@ export default function ChatPage() {
 
 
     const sendMessage = () => {
-        if (client?.connected) {
-            if (!input?.trim()) return;
+        try {
+            if (client?.connected) {
+                if (!input?.trim()) return;
 
 
-            const messageSend = {
-                message: input.trim(),
-                user_send: 'Fabrizio',
+                const messageSend = {
+                    message: input.trim(),
+                    user_send: 'Fabrizio',
+                }
+
+
+
+
+
+
+                client.publish({
+                    destination: '/app/chat',
+                    body: JSON.stringify(messageSend),
+                });
+                setInput('');
+
+                toast.error("Event has been created", {
+                    description: "Sunday, December 03, 2023 at 9:00 AM",
+                })
+
             }
-
-
-
-
-
-
-            client.publish({
-                destination: '/app/chat',
-                body: JSON.stringify(messageSend),
-            });
-            setInput('');
-
+        } catch (error) {
             toast("Event has been created", {
                 description: "Sunday, December 03, 2023 at 9:00 AM",
             })
-
         }
     };
 
@@ -98,18 +100,7 @@ export default function ChatPage() {
         <>
             <div className="flex h-screen antialiased text-gray-800">
                 <div className="flex flex-row h-full w-full overflow-x-hidden">
-                    <div className="flex flex-col py-4 px-1 w-16 gap-2 bg-fuchsia-900 flex-shrink-0">
-                        <div className="flex items-center justify-center">
-                            <Button>
-                                <Icon icon="solar:chat-line-bold"/>
-                            </Button>
-                        </div>
-                        <div className="flex items-center justify-center">
-                            <Button>
-                                <Icon icon="solar:user-circle-bold"/>
-                            </Button>
-                        </div>
-                    </div>
+                    <ChatMenu />
 
                     <div className="flex flex-col py-8 pl-2 pr-2 w-96 bg-amber-200 flex-shrink-0">
                         <div className="flex flex-row items-center justify-start h-12 w-full">
