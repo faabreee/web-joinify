@@ -1,5 +1,6 @@
 "use client";
 
+import Loading from "@/app/loading";
 import { createContext, useState } from "react";
 
 // Datos del usuario
