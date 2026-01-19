@@ -1,9 +1,8 @@
 "use client";
 
-import Loading from "@/app/loading";
 import { createContext, useState } from "react";
 
-// Datos del usuario
+// user data
 interface IUser {
     uuid: string;
     username: string;
@@ -12,15 +11,13 @@ interface IUser {
     token: string;
   }
   
-  // Datos del contexto
+// context data
 interface IUserContext {
     user: IUser | null;
     setUser: React.Dispatch<React.SetStateAction<IUser | null>>;
 }
 
-
 export const UserContext = createContext<IUserContext | null>(null);
-
 
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     
@@ -31,8 +28,6 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       email: "reyescocafagardo@gmail.com",
       token: "KG91tmf3cYqBKFcBVXIilsJ7gOeGBprI9qWPXmkYul6eh1uv5yWE8P8IUFY2UfZl",
     });
-
-    // const [user, setUser] = useState<IUser | null>(null);
 
     return (
         <UserContext.Provider value={{ user, setUser }}>

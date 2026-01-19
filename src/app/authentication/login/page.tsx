@@ -1,9 +1,22 @@
+'use client'
+
 import {Button} from "@/components/ui/button";
-import {Label} from "@/components/ui/label";
-import {Input} from "@/components/ui/input";
 import Link from "next/link";
 
 export default function LoginPage() {
+
+    const baseUrl = "http://localhost:8081/oauth2/authorize";
+
+    const params = new URLSearchParams({
+      response_type: "code",
+      client_id: "demo-client",
+      scope: "openid profile",
+      redirect_uri: "http://localhost:3000/authentication/login",
+      state: "xyz123"
+    });
+    
+    const loginUrlv2 = `${baseUrl}?${params.toString()}`;
+
     return (
         <div className="grid min-h-svh lg:grid-cols-2">
             <div className="relative hidden bg-muted lg:block">
@@ -24,41 +37,16 @@ export default function LoginPage() {
                 </div>
                 <div className="flex flex-1 items-center justify-center">
                     <div className="w-full max-w-lg">
-                        <form className="flex flex-col gap-6">
+                        <div className="flex flex-col gap-6">
                             <div className="flex flex-col gap-2 text-left">
                                 <h1 className="text-2xl font-bold">Welcome back</h1>
                                 <p className="text-balance text-sm text-muted-foreground">
-                                    Login to your account
+                                    Login to your account in Authora
                                 </p>
                             </div>
                             <div className="grid gap-6">
-                                <div className="grid gap-2">
-                                    <Label htmlFor="email">Email</Label>
-                                    <Input id="email" type="email"/>
-                                </div>
-                                <div className="grid gap-2">
-                                    {/*<div className="flex items-center">*/}
-                                    {/*    /!*<a*!/*/}
-                                    {/*    /!*    href="#"*!/*/}
-                                    {/*    /!*    className="ml-auto text-sm underline-offset-4 hover:underline"*!/*/}
-                                    {/*    /!*>*!/*/}
-                                    {/*    /!*    Forgot your password?*!/*/}
-                                    {/*    /!*</a>*!/*/}
-                                    {/*</div>*/}
-                                    <Label htmlFor="password">Password</Label>
-                                    <Input id="password" type="password"/>
-                                </div>
-                                <Button type="submit" className="w-full">
-                                    Login
-                                </Button>
-                                <div
-                                    className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
-                                      <span className="relative z-10 bg-background px-2 text-muted-foreground">
-                                        Or continue with
-                                      </span>
-                                </div>
-                                <Button variant="outline" className="w-full">
-                                    <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="100" height="100"
+                                <Button onClick={() => { window.location.href = loginUrlv2 }} className="w-full">
+                                <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="100" height="100"
                                          viewBox="0 0 44 44">
                                         <path
                                             d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"
@@ -77,8 +65,7 @@ export default function LoginPage() {
                                             fill="#1976D2"
                                         />
                                     </svg>
-
-                                    Login with Google
+                                    Login
                                 </Button>
                             </div>
                             <div className="text-center text-sm">
@@ -87,7 +74,7 @@ export default function LoginPage() {
                                     Sign up
                                 </Link>
                             </div>
-                        </form>
+                        </div>
                     </div>
                 </div>
             </div>

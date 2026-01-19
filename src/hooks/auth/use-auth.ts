@@ -2,7 +2,7 @@ import useSWRMutation from "swr/mutation";
 import axios from "axios";
 import useSWRImmutable from "swr/immutable";
 
-const HOST_API_VIO_BACKBONE = process.env.NEXT_PUBLIC_HOST_API_VIO_BACKBONE;
+const HOST_API_VIO_BACKBONE = process.env.NEXT_PUBLIC_HOST_API_BACKBONE;
 const axiosInstance = axios.create({ baseURL: HOST_API_VIO_BACKBONE });
 
 const fetcherGet = (url: string) => axiosInstance.get(url).then((res) => res.data);
