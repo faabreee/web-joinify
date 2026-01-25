@@ -1,7 +1,8 @@
+import { Navbar } from "@/components/custom/navbar";
 import "./globals.css";
 
 import { ThemeProvider } from "@/components/theme-provider";
-import { Toaster } from "@/components/ui/sonner";
+import { Toaster } from "@/components/ui/toaster";
 import { UserProvider } from "@/utils/UserProvider";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -15,9 +16,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             disableTransitionOnChange
           >
             <UserProvider>
+              <Navbar />
               <main>{children}</main>
             </UserProvider>
-            <Toaster position="top-right"/>
+            <Toaster />
           </ThemeProvider>
         </body>
       </html>

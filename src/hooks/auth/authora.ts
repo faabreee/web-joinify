@@ -1,35 +1,30 @@
 import axios from "axios";
-import useSWRImmutable from "swr/immutable";
+import useSWRMutation from "swr/mutation";
 
 const HOST_API_VIO_AUTHORA = process.env.NEXT_PUBLIC_HOST_API_AUTHORA;
 const axiosInstance = axios.create({ baseURL: HOST_API_VIO_AUTHORA });
 
-const fetcherPost = (url: string, token: string) => {
-    axiosInstance.post(url, new URLSearchParams(
-        { token }).toString(), 
-        { headers: { 
+const tokenFetcher = async (url: string, { arg }: { arg: { code: string } }) => {
+    const response = await axiosInstance.post(url, new URLSearchParams({
+        grant_type: "authorization_code",
+        client_id: "demo-client",
+        client_secret: "secret",
+        redirect_uri: "http://localhost:3000/authentication/login",
+        code: arg.code
+    }), {
+        headers: {
             "Content-Type": "application/x-www-form-urlencoded",
-            "Authorization": "Basic ZGVtby1jbGllbnQ6c2VjcmV0"
-        }}
-    ).then((res) => res.data);
+            Authorization: "Basic " + btoa("demo-client:secret"),
+        },
+    });
+    return response.data;
 }
 
-export function useAuthoraLogin(token: string) {
-
-    const { 
-        data, 
-        error, 
-        isLoading 
-    } = useSWRImmutable(
-        ["/oauth2/introspect", token],
-        ([url, token]) => fetcherPost(url, token),
-        {
-            revalidateOnMount: true
-        }
-      );
-
-    return { data, error, isLoading };
+export function useAuthoraLoginv2() {
+    const {
+      trigger,
+      isMutating,
+    } = useSWRMutation('/oauth2/token', tokenFetcher);
+  
+    return { trigger, isMutating };
 }
-
-
-

@@ -2,20 +2,65 @@
 
 import {Button} from "@/components/ui/button";
 import Link from "next/link";
+import { useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useAuthoraLoginv2 } from "@/hooks/auth/authora";
+import { useToast } from "@/hooks/use-toast";
+
+const HOST_API_VIO_AUTHORA = process.env.NEXT_PUBLIC_HOST_API_AUTHORA;
 
 export default function LoginPage() {
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const { toast } = useToast()
 
-    const baseUrl = "http://localhost:8081/oauth2/authorize";
-
-    const params = new URLSearchParams({
-      response_type: "code",
-      client_id: "demo-client",
-      scope: "openid profile",
-      redirect_uri: "http://localhost:3000/authentication/login",
-      state: "xyz123"
-    });
+    const { trigger, isMutating } = useAuthoraLoginv2();
     
-    const loginUrlv2 = `${baseUrl}?${params.toString()}`;
+    const redirectToAuthoraLogin = () => {
+        const baseUrl = `${HOST_API_VIO_AUTHORA}/oauth2/authorize`;
+    
+        const params = new URLSearchParams({
+            response_type: "code",
+            client_id: "demo-client",
+            scope: "openid profile",
+            redirect_uri: "http://localhost:3000/authentication/login",
+            state: "xyz123"
+        });
+
+        router.push(`${baseUrl}?${params.toString()}`);
+    } 
+
+    
+    const exchangeCodeForToken = async (code: string) => {
+        try {
+            const response = await trigger({ code });
+
+            document.cookie = `access_token=${response.access_token}; path=/; max-age=${response.expires_in}; SameSite=Lax`;
+  
+            toast({
+                title: "Logeo ",
+                variant: "success",
+                description: "Friday, February 10, 2023 at 5:57 PM",
+            })
+            
+
+            router.replace("/");
+        } catch (error) {
+            console.error(error);
+        }
+        
+        router.replace("/");
+    };
+  
+    useEffect(() => {
+      const code = searchParams.get("code");
+  
+      // if found code then get token
+      if (code) {
+        exchangeCodeForToken(code);
+      }
+    }, [searchParams]);
+  
 
     return (
         <div className="grid min-h-svh lg:grid-cols-2">
@@ -45,7 +90,16 @@ export default function LoginPage() {
                                 </p>
                             </div>
                             <div className="grid gap-6">
-                                <Button onClick={() => { window.location.href = loginUrlv2 }} className="w-full">
+                                <Button onClick={() => {
+
+                                    toast({
+                                        title: "Logeo",
+                                        variant: 'success',
+                                        // description: "Friday, February 10, 2023 at 5:57 PM",
+                                    })
+
+                                }}></Button>
+                                <Button onClick={redirectToAuthoraLogin} className="w-full">
                                 <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="100" height="100"
                                          viewBox="0 0 44 44">
                                         <path
