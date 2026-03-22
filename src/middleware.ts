@@ -4,6 +4,10 @@ import { jwtDecode } from "jwt-decode";
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  const protectedRoutes = ["/dashboard", "/profile"];
+
+  const isProtected = protectedRoutes.some(route => pathname.startsWith(route));
+
   // ignore files
   if (pathname.startsWith("/_next") || pathname.startsWith("/favicon.ico")) {
     return NextResponse.next();
@@ -12,10 +16,16 @@ export function middleware(request: NextRequest) {
   const token = request.cookies.get("access_token")?.value;
   const isLoginPage = pathname === "/authentication/login";
 
-  // force login
-  if (!token && !isLoginPage) {
-    return NextResponse.redirect(new URL("/authentication/login", request.url));
+  if (isProtected && !token) {
+    const loginUrl = new URL("/authentication/login", request.url);
+    loginUrl.searchParams.set("returnUrl", pathname);
+    return NextResponse.redirect(loginUrl);
   }
+
+  // force login
+  // if (!token && !isLoginPage) {
+  //  return NextResponse.redirect(new URL("/authentication/login", request.url));
+  //}
 
   if (token) {
     try {

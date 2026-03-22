@@ -1,4 +1,3 @@
-import { Navbar } from "@/components/custom/navbar";
 import "./globals.css";
 
 import { ThemeProvider } from "@/components/theme-provider";
@@ -16,8 +15,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             disableTransitionOnChange
           >
             <UserProvider>
-              <Navbar />
-              <main>{children}</main>
+              {children}
             </UserProvider>
             <Toaster />
           </ThemeProvider>

@@ -2,7 +2,7 @@
 
 import {Button} from "@/components/ui/button";
 import Link from "next/link";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuthoraLoginv2 } from "@/hooks/auth/authora";
 import { useToast } from "@/hooks/use-toast";
@@ -12,6 +12,9 @@ const HOST_API_VIO_AUTHORA = process.env.NEXT_PUBLIC_HOST_API_AUTHORA;
 export default function LoginPage() {
     const router = useRouter();
     const searchParams = useSearchParams();
+
+    const [returnUrl, setReturnUrl] = useState<string>("http://localhost:3000/authentication/login")
+
     const { toast } = useToast()
 
     const { trigger, isMutating } = useAuthoraLoginv2();
@@ -23,7 +26,7 @@ export default function LoginPage() {
             response_type: "code",
             client_id: "demo-client",
             scope: "openid profile",
-            redirect_uri: "http://localhost:3000/authentication/login",
+            redirect_uri: returnUrl,
             state: "xyz123"
         });
 
@@ -54,6 +57,11 @@ export default function LoginPage() {
   
     useEffect(() => {
       const code = searchParams.get("code");
+      const returnUrl = searchParams.get("returnUrl");
+
+      if (returnUrl) {
+        setReturnUrl(returnUrl);
+      }
   
       // if found code then get token
       if (code) {
